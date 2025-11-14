@@ -7,7 +7,7 @@
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   Unix Engine is distributed in the hope that it will be useful,
+   UASM is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
@@ -21,8 +21,8 @@
 #define __ELSE__(event) // %ELSE
 #define __INCL__(path) // %INCLUDE
 #define __ENDIF__ // %ENDIF
-
 #define __DEF__(macro) // %DEF
+#define __COMMENT__ // ;
 
 char __def_buffer[1000]; // limit for macro is 1000
 char __incl_buffer[1000]; // The limit for included files is 1000
