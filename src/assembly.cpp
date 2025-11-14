@@ -30,7 +30,6 @@ using namespace std;
 class Assembler {
 private:
     #ifdef _UASM64_
-    // 64-битная архитектура: 64-bit, 32-bit, 16-bit и 8-bit регистры
     map<string, int> registers = {
         {registry[0], 0}, {registry[1], 1}, {registry[2], 2}, {registry[3], 3},
         {registry[4], 4}, {registry[5], 5}, {registry[6], 6}, {registry[7], 7},
