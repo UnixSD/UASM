@@ -22,7 +22,12 @@
 #define __INCL__(path) // %INCLUDE
 #define __ENDIF__ // %ENDIF
 #define __DEF__(macro) // %DEF
-#define __COMMENT__ // ;
+#define __UNDEF__(macro) // %UNDEF
+#define __ELIF__(event) \ // %ELIF
 
-char __def_buffer[1000]; // limit for macro is 1000
-char __incl_buffer[1000]; // The limit for included files is 1000
+#define __COMMENT__ // ;
+#define __NEWLINE__ // \ 
+#define __ADDSUB__(event) // () for %if (mov eax, ebx) == ...
+
+std::vector<std::vector<char>> __def_buffer[1000][100]; // limit for macro is 1000
+std::vector<std::vector<<char>> __incl_buffer[1000][1000]; // The limit for included files is 1000
