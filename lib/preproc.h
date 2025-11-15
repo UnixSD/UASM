@@ -26,7 +26,7 @@
 #define __ELIF__(event) \ // %ELIF
 
 #define __COMMENT__ // ;
-#define __NEWLINE__ // \ 
+#define __NEWLINE__ // backslash
 #define __ADDSUB__(event) // () for %if (mov eax, ebx) == ...
 
 std::vector<std::vector<char>> __def_buffer[1000][100]; // limit for macro is 1000
