@@ -83,3 +83,10 @@ const char* syntax[] = {
     "CLD", "STD", "SAHF", "LAHF"
 };
 const size_t SYNTAX_COUNT = sizeof(syntax) / sizeof(syntax[0]);
+
+const char* directives[] = {
+    "db", "dw", "dd", "dq",
+    "section", "global", "extern",
+    "bits", "end"
+};
+const size_t DIRECTIVE_COUNT = sizeof(directives) / sizeof(directives[0]);
