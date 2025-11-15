@@ -257,8 +257,10 @@ private:
         // XCHG reg, reg
         if (registers.count(dest) && registers.count(src))
         {
-            
+            int modrm = 0xC0 | (registers[src] << 3) | registers[dest];
+            return "87" + toHex(modrm, 2);
         }
+       return "[FAILED]: unknown XCHG instruction";
     }
 
     string assembleSub(const vector<string>& tokens) 
