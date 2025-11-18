@@ -16,18 +16,21 @@
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
 #include "preproc.h"
-#include <fstream>
 #if __cplusplus < 202002L
 #   include <filesystem>
 #   define __CPP17__
 namespace fs = std::filesystem
-
-void  requireINCL(char file);
+bool linkObjects(vector<string> files,
+                 char &output);
 #endif
-using namespace std;
 
-void requireINCL(ifstream file);
-void requireINCLBuffer() const;
-void requireFunc() const; 
+#include <fstream>
+#include <vector>
+#include <string>
+
+using namespace std;
+export bool linkObjects(vector<string> files,
+                   ifstream &output);
+
+void trasferResults(string objFile);
