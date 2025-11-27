@@ -17,7 +17,6 @@
 */
 
 #include <string_view>
-#include <iostream>
 
 #if defined(__aarch64__)
 #   error "Unsupported architecture"
