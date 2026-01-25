@@ -17,8 +17,8 @@
 */
 
 
-#include "../lib/assembly.h"
-#include "../lib/lexer.h"
+#include "uasm/cpp/assembly.h"
+#include "uasm/cpp/lexer.h"
 using namespace std;
 
 #define __TOKEN_VERF__(value) tokens.size() < value

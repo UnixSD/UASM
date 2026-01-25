@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "preproc.h"
+#include "uasm/c/preproc.h"
 
 int main(int argc, char* argv[])
 {

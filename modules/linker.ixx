@@ -16,7 +16,7 @@
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "preproc.h"
+#include "uasm/cpp/preproc.h"
 #if __cplusplus < 202002L
 #   include <filesystem>
 #   define __CPP17__

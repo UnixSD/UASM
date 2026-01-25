@@ -15,17 +15,14 @@
    You should have received a copy of the GNU General Public License
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
+#pragma once 
+#include "uasm/cpp/preproc.h"
+#include "uasm/cpp/linker.h"
 
-#include "../lib/preproc.h"
-#include "../lib/lexer.h"
-#include "../lib/assembly.h"
-#include <vector>
+#if _cplusplues < 202009L
+void readINCL(char file) const;
+void readASM(char file) const;
+#endif
 
-void __preproc_if__(char *event)
-{
-
-    for (int i : __def_buffer.size()) 
-    {
-        
-    }
-}
+void readINCL(ifstream file) const;
+void readASM(ifstream file) const;

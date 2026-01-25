@@ -1,6 +1,6 @@
 #pragma once
 
-#include "asm.h"
+#include "uasm/c/asm.h"
 
 #if defined(__SYNTAX__)
 #if defined(__UASM__) && (__UASM__ == 64)
