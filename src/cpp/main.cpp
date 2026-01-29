@@ -171,7 +171,9 @@ int compile_assembly(const string& asm_code, const string& output_path, int bit_
     // Создание объектного файла info
     std::unique_ptr<MCObjectFileInfo> obj_file_info(new MCObjectFileInfo());
     ctx->setObjectFileInfo(obj_file_info.get());
-    obj_file_info->initMCObjectFileInfo(triple, options.MCOptions, reloc_model, code_model, *ctx);
+    const bool is_pic = reloc_model == Reloc::PIC_;
+    const bool is_large_code_model = code_model == CodeModel::Large;
+    obj_file_info->initMCObjectFileInfo(*ctx, is_pic, is_large_code_model);
     
     // Создание code emitter и asm backend
     const MCInstrInfo& MII = *target_machine->getMCInstrInfo();
