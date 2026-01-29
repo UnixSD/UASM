@@ -8,7 +8,6 @@
 #include <cstdlib>
 
 // LLVM includes
-#pragma cling add_library(llvm-19 "libLLVM-19.so")
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/TargetRegistry.h>
 #include <llvm/Target/TargetMachine.h>
