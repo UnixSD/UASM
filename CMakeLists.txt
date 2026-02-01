@@ -29,7 +29,6 @@ include_directories(${HEADER_DIR})
 set(UASM_SOURCES
     ${SRC_DIR}/cpp/main.cpp
     ${SRC_DIR}/cpp/assembly.cpp
-    ${SRC_DIR}/cpp/preproc.cpp
     ${SRC_DIR}/c/preproc.c
 
     ${HEADER_DIR}/uasm/c/asm.h
