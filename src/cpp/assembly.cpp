@@ -17,59 +17,55 @@
 */
 
 
-#include "../lib/assembly.h"
-#include "../lib/lexer.h"
+#include "uasm/cpp/assembly.h"
+#include "uasm/cpp/lexer.h"
+
+#include <cctype>
 using namespace std;
 
-#define __TOKEN_VERF__(value) tokens.size() < value
+#define __TOKEN_VERF__(value) (tokens.size() < static_cast<size_t>(value))
 #define __BASE_STRING__ string dest = tokens[1]; \
                         string src = tokens[2];
 
 #define __BASE_REG__ string reg = tokens[1];
 
+namespace {
+struct RegEntry {
+    const char* name;
+    int code;
+};
+
+static string lower_copy(const char* value)
+{
+    string out = value ? value : "";
+    transform(out.begin(), out.end(), out.begin(), ::tolower);
+    return out;
+}
+
+static const RegEntry kRegisterEntries[] = {
+    {"eax", 0}, {"ecx", 1}, {"edx", 2}, {"ebx", 3},
+    {"esp", 4}, {"ebp", 5}, {"esi", 6}, {"edi", 7},
+    {"ax", 0}, {"cx", 1}, {"dx", 2}, {"bx", 3},
+    {"sp", 4}, {"bp", 5}, {"si", 6}, {"di", 7},
+    {"rax", 0}, {"rcx", 1}, {"rdx", 2}, {"rbx", 3},
+    {"rsp", 4}, {"rbp", 5}, {"rsi", 6}, {"rdi", 7},
+    {"r8", 8}, {"r9", 9}, {"r10", 10}, {"r11", 11},
+    {"r12", 12}, {"r13", 13}, {"r14", 14}, {"r15", 15},
+    {"r8w", 8}, {"r9w", 9}, {"r10w", 10}, {"r11w", 11},
+    {"r12w", 12}, {"r13w", 13}
+};
+} // namespace
+
 class Assembler {
 private:
-    #ifdef _UASM64_
-    map<string, int> registers = {
-        {registry[0], 0}, {registry[1], 1}, {registry[2], 2}, {registry[3], 3},
-        {registry[4], 4}, {registry[5], 5}, {registry[6], 6}, {registry[7], 7},
+    map<string, int> registers;
 
-        {registry[8], 8}, {registry[9], 9}, {registry[10], 10}, {registry[11], 11},
-        {registry[12], 12}, {registry[13], 13}, {registry[14], 14}, {registry[15], 15},
-
-        {registry[16], 0}, {registry[17], 1}, {registry[18], 2}, {registry[19], 3},
-        {registry[20], 4}, {registry[21], 5}, {registry[22], 6}, {registry[23], 7},
-
-        {registry[24], 0}, {registry[25], 1}, {registry[26], 2}, {registry[27], 3},
-        {registry[28], 4}, {registry[29], 5}, {registry[30], 6}, {registry[31], 7},
-
-        {registry[32], 8}, {registry[33], 9}, {registry[34], 10}, {registry[35], 11},
-        {registry[36], 12}, {registry[37], 13}, {registry[38], 14}, {registry[39], 15},
-        {registry[40], 0}, {registry[41], 1}, {registry[42], 2}, {registry[43], 3},
-        {registry[44], 4}, {registry[45], 5}, {registry[46], 6}, {registry[47], 7},
-        {registry[48], 0}, {registry[49], 1}, {registry[50], 2}, {registry[51], 3}
-    };
-    #elif defined(_UASM32_)
-    map<string, int> registers = {
-        {registry[0], 0}, {registry[1], 1}, {registry[2], 2}, {registry[3], 3},
-        {registry[4], 4}, {registry[5], 5}, {registry[6], 6}, {registry[7], 7},
-        {registry[8], 0}, {registry[9], 1}, {registry[10], 2}, {registry[11], 3},
-
-        {registry[12], 4}, {registry[13], 5}, {registry[14], 6}, {registry[15], 7},
-        {registry[16], 0}, {registry[17], 1}, {registry[18], 2}, {registry[19], 3},
-        {registry[20], 4}, {registry[21], 5}, {registry[22], 6}, {registry[23], 7},
-        {registry[24], 0}, {registry[25], 1}, {registry[26], 2}, {registry[27], 3}
-    };
-    #elif defined(_UASM16_)
-    map<string, int> registers = {
-        {registry[0], 0}, {registry[1], 1}, {registry[2], 2}, {registry[3], 3},
-        {registry[4], 4}, {registry[5], 5}, {registry[6], 6}, {registry[7], 7},
-        {registry[8], 0}, {registry[9], 1}, {registry[10], 2}, {registry[11], 3},
-
-        {registry[12], 4}, {registry[13], 5}, {registry[14], 6}, {registry[15], 7},
-        {registry[16], 0}, {registry[17], 1}, {registry[18], 2}, {registry[19], 3}
-    };
-    #endif
+    void init_registers()
+    {
+        for (const auto& entry : kRegisterEntries) {
+            registers.emplace(lower_copy(entry.name), entry.code);
+        }
+    }
 
     string toLower(string s) 
     {
@@ -122,6 +118,11 @@ private:
     }
 
 public:
+    Assembler()
+    {
+        init_registers();
+    }
+
     string assemble(const string& instruction) 
     {
         string line = trim(instruction);
@@ -176,8 +177,9 @@ public:
         {
             result = assemblePop(tokens);
         }
-        else if (opcode == "XCHG") 
+        else if (opcode == "xchg") 
         {
+            result = assembleXCHG(tokens);
         }
 
         return result;
@@ -186,9 +188,9 @@ public:
 private:
     string assembleMov(const vector<string>& tokens) 
     {
-        if (__TOKEN_VERF__(3)) return;
+        if (__TOKEN_VERF__(3)) return "[FAILED]: invalid MOV operands";
 
-        __BASE_STRING
+        __BASE_STRING__
 
         // MOV reg, reg
         if (registers.count(dest) && registers.count(src)) 
@@ -227,9 +229,9 @@ private:
 
     string assembleAdd(const vector<string>& tokens) 
     {
-        if (__TOKEN_VERF__(3)) return;
+        if (__TOKEN_VERF__(3)) return "[FAILED]: invalid ADD operands";
 
-        __BASE_STRING
+        __BASE_STRING__
 
         // ADD reg, imm
         if (registers.count(dest) && isNumber(src)) 
@@ -251,7 +253,7 @@ private:
 
     string assembleXCHG(const vector<string>& tokens)
     {
-        if (__TOKEN_VERF__(3)) return;
+        if (__TOKEN_VERF__(3)) return "[FAILED]: invalid XCHG operands";
 
         __BASE_STRING__
         // XCHG reg, reg
@@ -265,7 +267,7 @@ private:
 
     string assembleSub(const vector<string>& tokens) 
     {
-        if (__TOKENT_VERF__(3)) return;
+        if (__TOKEN_VERF__(3)) return "[FAILED]: invalid SUB operands";
 
         __BASE_STRING__
 
@@ -289,7 +291,7 @@ private:
 
     string assembleInc(const vector<string>& tokens) 
     {
-        if (__TOKEN_VERF__(2)) return;
+        if (__TOKEN_VERF__(2)) return "[FAILED]: invalid INC operands";
 
         __BASE_REG__
         if (registers.count(reg) && reg[0] == 'e') 
@@ -302,7 +304,7 @@ private:
 
     string assembleDec(const vector<string>& tokens) 
     {
-        if (__TOKEN_VERF__(2)) return;
+        if (__TOKEN_VERF__(2)) return "[FAILED]: invalid DEC operands";
 
         __BASE_REG__
         if (registers.count(reg) && reg[0] == 'e') 
@@ -315,7 +317,7 @@ private:
 
     string assemblePush(const vector<string>& tokens) 
     {
-        if (__TOKEN_VERF__(2)) return;
+        if (__TOKEN_VERF__(2)) return "[FAILED]: invalid PUSH operands";
 
         __BASE_REG__
         if (registers.count(reg) && reg[0] == 'e') 
@@ -328,7 +330,7 @@ private:
 
     string assemblePop(const vector<string>& tokens) 
     {
-        if (__TOKEN_VERF__(2)) return;
+        if (__TOKEN_VERF__(2)) return "[FAILED]: invalid POP operands";
 
         __BASE_REG__
         if (registers.count(reg) && reg[0] == 'e') 
@@ -346,3 +348,9 @@ private:
         return ss.str();
     }
 };
+
+string assemble_line(const string& instruction)
+{
+    static Assembler assembler;
+    return assembler.assemble(instruction);
+}

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
-project(UASM VERSION 2.56 LANGUAGES C)
+project(UASM VERSION 2.56 LANGUAGES C CXX)
 
 # Настройка стандарта C
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Опции проекта
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
@@ -16,37 +18,50 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Директории с исходниками
-set(SRC_DIR ${CMAKE_SOURCE_DIR})
-set(HEADER_DIR ${CMAKE_SOURCE_DIR}/H)
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(HEADER_DIR ${CMAKE_SOURCE_DIR}/include)
+set(MODULE_DIR ${CMAKE_SOURCE_DIR}/modules)
 
 # Включаем директорию с заголовочными файлами
 include_directories(${HEADER_DIR})
 
 # Список исходных файлов
 set(UASM_SOURCES
-    lib/assembly.h
-    ${SRC_DIR}/main.cpp
-    lib/preproc.h
-    lib/compiler.h
-    lib/linker.h
-    lib/lexer.h
-    lib/linker.ixx
-    lib/preproc.h
-    lib/reader.h
-    lib/syntax.h
+    ${SRC_DIR}/cpp/main.cpp
+    ${SRC_DIR}/cpp/assembly.cpp
+    ${SRC_DIR}/cpp/parser.cpp
+    ${SRC_DIR}/cpp/syntax.cpp
+    ${SRC_DIR}/c/preproc.c
+    ${SRC_DIR}/c/lexer.c
+    ${SRC_DIR}/c/parser.c
 
-    ${SRC_DIR}/assembly.cpp
-    ${SRC_DIR}/preproc.cpp
-}
+    ${HEADER_DIR}/uasm/c/asm.h
+    ${HEADER_DIR}/uasm/c/lexer.h
+    ${HEADER_DIR}/uasm/c/preproc.h
+    ${HEADER_DIR}/uasm/cpp/assembly.h
+    ${HEADER_DIR}/uasm/cpp/compilation.h
+    ${HEADER_DIR}/uasm/cpp/compiler.h
+    ${HEADER_DIR}/uasm/cpp/lexer.h
+    ${HEADER_DIR}/uasm/cpp/linker.h
+    ${HEADER_DIR}/uasm/cpp/object.h
+    ${HEADER_DIR}/uasm/cpp/preproc.h
+    ${HEADER_DIR}/uasm/cpp/reader.h
+    ${HEADER_DIR}/uasm/cpp/syntax.h
+
+    ${MODULE_DIR}/linker.ixx
+)
 
 # Определяем флаги компилятора
-if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -std=20")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-Wall -Wextra)
     if(ENABLE_DEBUG)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -DDEBUG")
+        add_compile_options(-g)
+        add_definitions(-DDEBUG)
     else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -DNDEBUG")
+        add_compile_options(-O2)
+        add_definitions(-DNDEBUG)
     endif()
+endif()
 
 # Создаём исполняемый файл
 add_executable(uasm ${UASM_SOURCES})

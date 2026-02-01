@@ -2,12 +2,12 @@
 
    This file is part of UASM.
 
-   Unix Engine is free software: you can redistribute it and/or modify
+   UASM is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
-   Unix Engine is distributed in the hope that it will be useful,
+   UASM is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
@@ -16,22 +16,9 @@
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-#include "preproc.h"
-#if __cplusplus < 202002L
-#   include <filesystem>
-#   define __CPP17__
-namespace fs = std::filesystem
-bool linkObjects(vector<string> files,
-                 char &output);
-#endif
+#include "uasm/cpp/preproc.h"
 
-#include <fstream>
-#include <vector>
-#include <string>
-using namespace std;
-
-using namespace std;
-/* removed 'export' */ bool linkObjects(vector<string> files);
-
-void trasferResults(string objFile);
+// TODO: C++-препроцесор ще не реалізований.
+void __preproc_if__(char* /*event*/)
+{
+}

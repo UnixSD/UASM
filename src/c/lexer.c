@@ -1,26 +1,34 @@
-/*  Copyright (C) 2025 UnixSD
+#include "uasm/c/lexer.h"
 
-   This file is part of UASM.
-
-   UASM is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   UASM is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with UASM.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#ifndef _UASM64_
-const char* registry[] = {
+#if defined(_UASM16_)
+const char* const registry[] = {
+    "AX", "BX", "CX",
+    "DX", "SI", "DI",
+    "BP", "SP",
+    "R8W", "R9W", "R10W",
+    "R11W", "R12W", "R13W"
+};
+#elif defined(_UASM32_)
+const char* const registry[] = {
+    "EAX", "EBX", "ECX",
+    "EDX", "ESI", "EDI",
+    "EBP", "ESP",
+    "EIP", "EFLAGS",
+    "CS", "DS", "SS", "ES", "FS", "GS",
+    "R8",  "R9",  "R10",
+    "R11", "R12", "R13",
+    "R14", "R15",
+    "AX", "BX", "CX",
+    "DX", "SI", "DI",
+    "BP", "SP",
+    "R8W", "R9W", "R10W",
+    "R11W", "R12W", "R13W"
+};
+#else
+const char* const registry[] = {
     "RAX", "RBX", "RCX",
     "RDX", "RSI", "RDI",
-    "RBP", "RSP", 
+    "RBP", "RSP",
     "EAX", "EBX", "ECX",
     "EDX", "ESI", "EDI",
     "EBP", "ESP",
@@ -35,36 +43,11 @@ const char* registry[] = {
     "R8W", "R9W", "R10W",
     "R11W", "R12W", "R13W"
 };
-const size_t REGISTRY_COUNT = sizeof(registry) / sizeof(registry[0]);
-#elif _UASM32_
-const char* registry[] = {
-    "EAX", "EBX", "ECX",
-    "EDX", "ESI", "EDI",
-    "EBP", "ESP",
-    "EIP", "EFLAGS",
-    "CS", "DS", "SS", "ES", "FS", "GS",
-    "R8",  "R9",  "R10",
-    "R11", "R12", "R13",
-    "R14", "R15",
-    "AX", "BX", "CX",
-    "DX", "SI", "DI",
-    "BP", "SP",
-    "R8W", "R9W", "R10W",
-    "R11W", "R12W", "R13W"
-};
-const size_t REGISTRY_COUNT = sizeof(registry) / sizeof(registry[0]);
-#elif _UASM16_
-const char* registry[] = {
-    "AX", "BX", "CX",
-    "DX", "SI", "DI",
-    "BP", "SP",
-    "R8W", "R9W", "R10W",
-    "R11W", "R12W", "R13W"
-};
-const size_t REGISTRY_COUNT = sizeof(registry) / sizeof(registry[0]);
 #endif
 
-const char* syntax[] = {
+const size_t REGISTRY_COUNT = sizeof(registry) / sizeof(registry[0]);
+
+const char* const syntax[] = {
     "%INCLUDE", "%IF", "%ELIF", "%DEF", "%ENDIF",
     "MOV", "XCHG", "PUSH",
     "POP", "ADD", "SUB",
@@ -82,11 +65,13 @@ const char* syntax[] = {
     "LODSB", "LEA", "CLC", "STC",
     "CLD", "STD", "SAHF", "LAHF"
 };
+
 const size_t SYNTAX_COUNT = sizeof(syntax) / sizeof(syntax[0]);
 
-const char* directives[] = {
+const char* const directives[] = {
     "db", "dw", "dd", "dq",
     "section", "global", "extern",
     "bits", "end"
 };
+
 const size_t DIRECTIVE_COUNT = sizeof(directives) / sizeof(directives[0]);

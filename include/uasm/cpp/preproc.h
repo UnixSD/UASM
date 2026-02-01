@@ -16,21 +16,14 @@
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "preproc.h"
-#if __cplusplus < 202002L
-#   include <filesystem>
-#   define __CPP17__
-namespace fs = std::filesystem
-bool linkObjects(vector<string> files,
-                 char &output);
-#endif
+#pragma once
 
-#include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
-using namespace std;
-export bool linkObjects(vector<string> files,
-                   ifstream &output);
-
-void trasferResults(string objFile);
+namespace uasm {
+struct MacroDefinition {
+    std::string name;
+    std::string value;
+};
+} // namespace uasm
