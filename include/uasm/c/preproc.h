@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Максимальная длина имени макроса
 #define MAX_MACRO_NAME 256
 #define MAX_MACRO_VALUE 4096
@@ -70,3 +74,7 @@ bool preproc_evaluate_condition(PreprocContext* ctx, const char* expr);
 bool preproc_is_defined(PreprocContext* ctx, const char* name);
 int preproc_get_macro_value(PreprocContext* ctx, const char* name);
 char* preproc_find_include_file(PreprocContext* ctx, const char* filename);
+
+#ifdef __cplusplus
+}
+#endif

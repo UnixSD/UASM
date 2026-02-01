@@ -17,21 +17,10 @@
 */
 
 #pragma once
-#include "uasm/cpp/preproc.h"
-#if __cplusplus < 202002L
-#   include <filesystem>
-#   define __CPP17__
-namespace fs = std::filesystem
-bool linkObjects(vector<string> files,
-                 char &output);
-#endif
 
-#include <fstream>
-#include <vector>
 #include <string>
-using namespace std;
+#include <vector>
 
-using namespace std;
-/* removed 'export' */ bool linkObjects(vector<string> files);
-
-void trasferResults(string objFile);
+bool linkObjects(const std::vector<std::string>& files);
+bool linkObjects(const std::vector<std::string>& files, const std::string& output);
+void trasferResults(const std::string& objFile);

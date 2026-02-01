@@ -1,6 +1,12 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include "lexer.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* ASCII table:
 q: 113
@@ -83,5 +89,9 @@ m: 109
 #define UASM_PARSER_SYMOL_COMMA 44 // ,
 #define UASM_PARSER_SYMOL_SEMICOLON 59 // ;
 
-inline int toInt_char(char c[]);
+int toInt_char(const char* c);
 bool parser_asm(const char* keyword);
+
+#ifdef __cplusplus
+}
+#endif

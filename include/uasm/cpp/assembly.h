@@ -26,3 +26,5 @@
 #include <algorithm>
 
 class Assembler;
+
+std::string assemble_line(const std::string& instruction);

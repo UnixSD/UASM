@@ -17,15 +17,8 @@
 */
 
 #include "uasm/cpp/preproc.h"
-#include "uasm/cpp/lexer.h"
-#include "uasm/cpp/assembly.h"
-#include <vector>
 
-void __preproc_if__(char *event)
+// TODO: C++-препроцесор ще не реалізований.
+void __preproc_if__(char* /*event*/)
 {
-
-    for (int i : __def_buffer.size()) 
-    {
-        
-    }
 }

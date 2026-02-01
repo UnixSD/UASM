@@ -16,18 +16,14 @@
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once 
-#define __IFA__(event) // %IF
-#define __ELSE__(event) // %ELSE
-#define __INCL__(path) // %INCLUDE
-#define __ENDIF__ // %ENDIF
-#define __DEF__(macro) // %DEF
-#define __UNDEF__(macro) // %UNDEF
-#define __ELIF__(event) \ // %ELIF
+#pragma once
 
-#define __COMMENT__ // ;
-#define __NEWLINE__ // backslash
-#define __ADDSUB__(event) // () for %if (mov eax, ebx) == ...
+#include <string>
+#include <vector>
 
-std::vector<std::vector<char>> __def_buffer[1000][100]; // limit for macro is 1000
-std::vector<std::vector<<char>> __incl_buffer[1000][1000]; // The limit for included files is 1000
+namespace uasm {
+struct MacroDefinition {
+    std::string name;
+    std::string value;
+};
+} // namespace uasm

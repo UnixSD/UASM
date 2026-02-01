@@ -15,14 +15,9 @@
    You should have received a copy of the GNU General Public License
    along with UASM.  If not, see <http://www.gnu.org/licenses/>.
 */
-#pragma once 
-#include "uasm/cpp/preproc.h"
-#include "uasm/cpp/linker.h"
+#pragma once
 
-#if _cplusplues < 202009L
-void readINCL(char file) const;
-void readASM(char file) const;
-#endif
+#include <fstream>
 
-void readINCL(ifstream file) const;
-void readASM(ifstream file) const;
+void readINCL(std::ifstream& file);
+void readASM(std::ifstream& file);

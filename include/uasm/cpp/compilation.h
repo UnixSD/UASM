@@ -31,10 +31,10 @@
 using namespace std;
 using namespace llvm;
 
-__USED_API__ void __init_llvm() const noexcept;
+__USED_API__ void __init_llvm() noexcept;
 __USED_API__ Target* __get_target(const string& triple_str);
 __USED_API__ MCContext* __build_mc_context(Triple& triple);
-__USED_API__ error __parse_asm(const string& asm_code, MCContext* ctx);
+__USED_API__ llvm::Error __parse_asm(const string& asm_code, MCContext* ctx);
 __USED_API__ void __read_obj(const string& filename);
 #else
 #error "LLVM is not supported"

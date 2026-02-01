@@ -29,7 +29,11 @@ include_directories(${HEADER_DIR})
 set(UASM_SOURCES
     ${SRC_DIR}/cpp/main.cpp
     ${SRC_DIR}/cpp/assembly.cpp
+    ${SRC_DIR}/cpp/parser.cpp
+    ${SRC_DIR}/cpp/syntax.cpp
     ${SRC_DIR}/c/preproc.c
+    ${SRC_DIR}/c/lexer.c
+    ${SRC_DIR}/c/parser.c
 
     ${HEADER_DIR}/uasm/c/asm.h
     ${HEADER_DIR}/uasm/c/lexer.h

@@ -1,6 +1,6 @@
 #include "uasm/cpp/compilation.h"
 
-__USED_API__ void __init_llvm() const noexcept 
+__USED_API__ void __init_llvm() noexcept 
 {
     InitializeAllTargetInfos();
     InitializeAllTargetMCs();
@@ -25,6 +25,17 @@ __USED_API__ MCContext* __build_mc_context(Triple& triple)
     MCAsmInfo* asm_info = nullptr;
     
     return new MCContext(triple, asm_info, nullptr, nullptr, options);
+}
+
+__USED_API__ llvm::Error __parse_asm(const string& asm_code, MCContext* ctx)
+{
+    if (!ctx) {
+        return createStringError(inconvertibleErrorCode(), "MCContext is null");
+    }
+    if (asm_code.empty()) {
+        return createStringError(inconvertibleErrorCode(), "asm_code is empty");
+    }
+    return llvm::Error::success();
 }
 
 __USED_API__ void __read_obj(const string& filename) 
@@ -95,4 +106,3 @@ __USED_API__ void __read_obj(const string& filename)
 //     // Или с использованием logAllUnhandledErrors
 //     logAllUnhandledErrors(std::move(error), errs(), "Error: ");
 // }
-

@@ -1,13 +1,7 @@
 #include "uasm/cpp/object.h"
 
-__USED_API__ object::ObjectFile* __load_obj(const string& filename) const
+__USED_API__ llvm::Expected<llvm::object::OwningBinary<llvm::object::Binary>>
+__load_obj(const std::string& filename)
 {
-    auto binary_or_error = object::createBinary(filename);
-    if (!binary_or_error) 
-    {
-        errs() << "Error reading file: " << toString(binary_or_error.takeError()) << "\n";
-        return nullptr;
-    }
-    return binary_or_error.get();
+    return llvm::object::createBinary(filename);
 }
-
