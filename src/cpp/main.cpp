@@ -43,6 +43,9 @@ extern "C" {
 #include "uasm/c/preproc.h"
 }
 
+#include "uasm/cpp/assembly.h"
+#include "uasm/cpp/parser.h"
+
 using namespace llvm;
 using namespace std;
 
@@ -51,6 +54,9 @@ static int target_bit_width = 64;  // По умолчанию 64-бит
 static string output_file;
 static vector<string> include_paths;
 static string input_file;
+static bool internal_mode = false;
+static bool strict_mode = false;
+static bool warn_unknown = true;
 
 // Функция для парсинга аргументов командной строки
 void parse_arguments(int argc, char* argv[]) {
@@ -65,6 +71,12 @@ void parse_arguments(int argc, char* argv[]) {
             output_file = argv[++i];
         } else if (strcmp(argv[i], "-I") == 0 && i + 1 < argc) {
             include_paths.push_back(argv[++i]);
+        } else if (strcmp(argv[i], "--internal") == 0) {
+            internal_mode = true;
+        } else if (strcmp(argv[i], "--strict") == 0) {
+            strict_mode = true;
+        } else if (strcmp(argv[i], "--no-warn-unknown") == 0) {
+            warn_unknown = false;
         } else if (argv[i][0] != '-') {
             input_file = argv[i];
         } else {
@@ -74,18 +86,20 @@ void parse_arguments(int argc, char* argv[]) {
     }
 
     if (input_file.empty()) {
-        cerr << "Usage: " << argv[0] << " [-f 16|32|64] [-o output_file] [-I include_path] input_file" << endl;
+        cerr << "Usage: " << argv[0]
+             << " [-f 16|32|64] [-o output_file] [-I include_path] [--internal] [--strict]"
+             << " [--no-warn-unknown] input_file" << endl;
         exit(1);
     }
 
     if (output_file.empty()) {
-        // Если не указан выходной файл, используем имя входного файла с расширением .o
+        // Если не указан выходной файл, используем имя входного файла с расширением .o или .hex
         output_file = input_file;
         size_t pos = output_file.find_last_of('.');
         if (pos != string::npos) {
             output_file = output_file.substr(0, pos);
         }
-        output_file += ".o";
+        output_file += internal_mode ? ".hex" : ".o";
     }
 }
 
@@ -272,10 +286,81 @@ int main(int argc, char* argv[]) {
     buffer << processed_file.rdbuf();
     string asm_code = buffer.str();
     processed_file.close();
-    
+
     // Удаление временного файла
     remove(temp_output.c_str());
+
+    // Парсинг строк и базовая валидация синтаксиса
+    string internal_output;
+    {
+        istringstream line_stream(asm_code);
+        string line;
+        size_t line_number = 0;
+        bool has_error = false;
+
+        while (getline(line_stream, line)) {
+            ++line_number;
+            uasm::ParsedLine parsed = uasm::parse_line(line);
+            if (parsed.kind == uasm::LineKind::Error) {
+                bool is_unknown = parsed.error.rfind("Unknown opcode", 0) == 0;
+                if (is_unknown && !strict_mode) {
+                    if (warn_unknown) {
+                        cerr << input_file << ":" << line_number << ": warning: "
+                             << parsed.error << endl;
+                    }
+                    continue;
+                }
+                cerr << input_file << ":" << line_number << ": error: " << parsed.error << endl;
+                has_error = true;
+                break;
+            }
+            if (internal_mode) {
+                if (parsed.kind == uasm::LineKind::Directive) {
+                    if (warn_unknown) {
+                        cerr << input_file << ":" << line_number
+                             << ": warning: directive ignored in --internal mode" << endl;
+                    }
+                } else if (parsed.kind == uasm::LineKind::Instruction) {
+                    string instruction = parsed.opcode;
+                    if (!parsed.operands.empty()) {
+                        instruction += " ";
+                        for (size_t i = 0; i < parsed.operands.size(); ++i) {
+                            if (i > 0) {
+                                instruction += ", ";
+                            }
+                            instruction += parsed.operands[i];
+                        }
+                    }
+                    string encoded = assemble_line(instruction);
+                    if (encoded.empty() || encoded.rfind("[FAILED]", 0) == 0) {
+                        cerr << input_file << ":" << line_number
+                             << ": error: internal assembler failed: " << encoded << endl;
+                        has_error = true;
+                        break;
+                    }
+                    internal_output += encoded;
+                    internal_output += "\n";
+                }
+            }
+        }
+
+        if (has_error) {
+            return 1;
+        }
+    }
     
+    if (internal_mode) {
+        ofstream out_file(output_file, ios::out | ios::trunc);
+        if (!out_file.is_open()) {
+            cerr << "Error: Cannot open output file: " << output_file << endl;
+            return 1;
+        }
+        out_file << internal_output;
+        out_file.close();
+        cout << "Successfully assembled (internal) to: " << output_file << endl;
+        return 0;
+    }
+
     // Компиляция в объектный файл
     int compile_result = compile_assembly(asm_code, output_file, target_bit_width, input_file);
     
