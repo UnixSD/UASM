@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Опции проекта
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(ENABLE_DEBUG "Enable debug build" OFF)
+set(UASM_TARGET_BITS "64" CACHE STRING "Target bit width (16/32/64)")
+set_property(CACHE UASM_TARGET_BITS PROPERTY STRINGS 16 32 64)
 
 # Определяем платформу
 if(UNIX AND NOT APPLE)
@@ -65,6 +67,18 @@ endif()
 
 # Создаём исполняемый файл
 add_executable(uasm ${UASM_SOURCES})
+
+if(UASM_TARGET_BITS STREQUAL "16")
+    set(UASM_ARCH_DEF _UASM16_)
+elseif(UASM_TARGET_BITS STREQUAL "32")
+    set(UASM_ARCH_DEF _UASM32_)
+elseif(UASM_TARGET_BITS STREQUAL "64")
+    set(UASM_ARCH_DEF _UASM64_)
+else()
+    message(FATAL_ERROR "UASM_TARGET_BITS must be 16, 32, or 64")
+endif()
+
+target_compile_definitions(uasm PRIVATE ${UASM_ARCH_DEF})
 
 # Линковка с библиотеками
 if(UNIX)

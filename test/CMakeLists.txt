@@ -10,5 +10,8 @@ add_executable(uasm_tests
 
 target_include_directories(uasm_tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(uasm_tests PRIVATE cxx_std_20)
+if(DEFINED UASM_ARCH_DEF)
+    target_compile_definitions(uasm_tests PRIVATE ${UASM_ARCH_DEF})
+endif()
 
 add_test(NAME uasm_tests COMMAND uasm_tests)
