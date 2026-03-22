@@ -26,3 +26,5 @@ cmake --build build
 - modules: C++20 modules
 - docs: documentation
 - examples: sample assembly inputs
+
+![graph](https://github.com/UnixSD/UASM/blob/main/docs/graph.png)
